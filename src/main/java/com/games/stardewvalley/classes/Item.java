@@ -61,4 +61,8 @@ public abstract class Item {
         this.descricao = descricao;
     }
     
+    public double getConstante() {
+        return constante;
+    }
+    
 }

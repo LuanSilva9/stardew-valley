@@ -12,14 +12,24 @@ public class Fazenda {
     private String nomeFazenda;
     private Semente[][] matrizFazenda;
     
-    public Fazenda(String nomeFazenda, Semente[][] matrizFazenda) {
+    public Fazenda(String nomeFazenda) {
         this.nomeFazenda = nomeFazenda;
-        this.matrizFazenda = matrizFazenda;
+        
+        this.matrizFazenda = new Semente[64][64];
     }
     
     // Metodo(s) da Fazenda
     public void cultivar() {
-        
+        for(int i = 0; i < 64; i++) {
+            for(int j = 0; j < 64; j++) {
+                if(matrizFazenda[i][j] == null);
+                else {
+                    int statusAntesCultivo = matrizFazenda[i][j].getStatus();
+                
+                    matrizFazenda[i][j].setStatus(statusAntesCultivo + 1);
+                }
+            }
+        }
     }
     
     // Getters e Setters 
@@ -33,9 +43,5 @@ public class Fazenda {
 
     public Semente[][] getMatrizFazenda() {
         return matrizFazenda;
-    }
-
-    public void setMatrizFazenda(Semente[][] matrizFazenda) {
-        this.matrizFazenda = matrizFazenda;
     }
 }

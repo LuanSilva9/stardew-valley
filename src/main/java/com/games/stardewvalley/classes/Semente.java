@@ -9,15 +9,16 @@ package com.games.stardewvalley.classes;
  * @author Luan
  */
 public class Semente extends Item {
-    private int valor;
     private int status;
     private int statusColheita;
+    private boolean seco;
 
-    public Semente(int valor, int status, int statusColheita, String nome, int raridade, String tipo, String descricao) {
+    public Semente(String nome, int raridade, String tipo, String descricao, int statusColheita) {
         super(nome, raridade, tipo, descricao);
-        this.valor = valor;
-        this.status = status;
         this.statusColheita = statusColheita;
+        
+        this.seco = true;
+        this.status = 0;
     }
     
     
@@ -26,17 +27,24 @@ public class Semente extends Item {
         return statusColheita - status;
     }
     
+    @Override 
+    public double calcularPreco() {
+        double preco = super.getRaridade() * super.getConstante();
+        
+        return preco + ( status * 5 );
+    }
+    
     // Getters e Setters
-    public int getValor() {
-        return valor;
-    }
-
-    public void setValor(int valor) {
-        this.valor = valor;
-    }
-
     public int getStatus() {
         return status;
+    }
+    
+    public boolean getSeco() {
+        return seco;
+    }
+    
+    public void setSeco(boolean valor) {
+        this.seco = valor;
     }
 
     public void setStatus(int status) {

@@ -9,9 +9,7 @@ package com.games.stardewvalley.classes;
  * @author Luan
  */
 public class Peixe extends Item {
-
     public Peixe(String nome, int raridade, String tipo, String descricao) {
         super(nome, raridade, tipo, descricao);
     }
-    
 }
