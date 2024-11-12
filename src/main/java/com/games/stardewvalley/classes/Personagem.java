@@ -15,7 +15,9 @@ public class Personagem {
     private double saldo;
     private Fazenda fazenda;
     private Vila vila;
+    private Mapa mapa;
     private int diaAtual;
+
 
     public Personagem(String nome, String skin, Fazenda fazenda, Vila vila) {
         this.nome = nome;
@@ -23,58 +25,55 @@ public class Personagem {
         this.fazenda = fazenda;
         this.vila = vila;
         
-        this.saldo = 0;
+        this.saldo = 10.0;
         this.diaAtual = 0;
         this.inventario = new Item[128];
+        this.mapa = new Mapa("FAZENDA");
     }
     
     // Metodos do Personagem
     public void plantar(int posX, int posY, int slot) {
-        if(posX >= 64 || posY >= 64) {
-            System.out.println("Posição invalida para plantio!");
-            return;
-        }
-        
-        Semente[][] farmMapper = this.fazenda.getMatrizFazenda();
-        
-        if(inventario[slot] == null) {
-            System.out.println("Slot vazio!");
-            return;
-        }
-        
-        if(inventario[slot].getTipo() == "semente") {
-            Semente semente = (Semente) inventario[slot];
-            
-            farmMapper[posX][posY] = semente;
-            System.out.println("Semente " + semente.getNome() + " Plantada com successo!");
-        
-            inventario[slot] = null;
+        if(chunksLimiter(posX, posY) && validatePlace("FAZENDA")) {
+            Semente[][] farmMapper = this.fazenda.getMatrizFazenda();
+
+            if(inventario[slot] == null) {
+                System.out.println("Slot vazio!");
+                return;
+            }
+
+            if(inventario[slot].getTipo() == "semente") {
+                Semente semente = (Semente) inventario[slot];
+
+                farmMapper[posX][posY] = semente;
+                System.out.println("Semente " + semente.getNome() + " Plantada com successo!");
+
+                inventario[slot] = null;
+            }
+
         }
     }
     
     public void regar(int posX, int posY) {
-        if(posX >= 64 || posY >= 64) {
-            System.out.println("Posição invalida para regar!");
-            return;
+        if(chunksLimiter(posX, posY) && validatePlace("FAZENDA")) {
+        
+            Semente[][] farmMapper = this.fazenda.getMatrizFazenda();
+
+            if(farmMapper[posX][posY].getSeco()) {
+                farmMapper[posX][posY].setSeco(false);
+                System.out.println("Semente " + farmMapper[posX][posY].getNome() + " Foi regada!");
+            };
+
+            System.out.println("A semente " + farmMapper[posX][posY].getNome() + " Ja está regada e umida!");
         }
-        
-        Semente[][] farmMapper = this.fazenda.getMatrizFazenda();
-        
-        if(farmMapper[posX][posY].getSeco()) {
-            farmMapper[posX][posY].setSeco(false);
-            System.out.println("Semente " + farmMapper[posX][posY].getNome() + " Foi regada!");
-        };
-        
-        System.out.println("A semente " + farmMapper[posX][posY].getNome() + " Ja está regada e umida!");
     } 
     
 
     public void pescar() {
-        Item peixePescado = new Peixe("Lucio", 10, "Peixe de agua doce", "Esse cara é bao!");
-        
-        int slot = findForEmptySlot();
-        
-        setInventario(peixePescado, slot);
+        if(validatePlace("PRAIA")) {
+            Item peixePescado = new Peixe("Lucio", 10, "Peixe de agua doce", "Esse cara é bao!");
+
+            colocarNoInventario(peixePescado);
+        }
     }
     
     public void abrirInventario() {
@@ -102,62 +101,110 @@ public class Personagem {
     }
     
     public void verPlantio(int posX, int posY) {
-        if(posX > 64 || posY > 64) {
-            System.out.println("Posição invalida para plantio!");
-            return;
+        if(chunksLimiter(posX, posY) && validatePlace("FAZENDA")) {
+            Semente[][] farmMapper = this.fazenda.getMatrizFazenda();
+
+            System.out.println("Relatorio do plantio: \nNome da semente" + farmMapper[posX][posY].getNome() + "\nDescricao: " + farmMapper[posX][posY].getDescricao() + "\nDias até a colheita: " + farmMapper[posX][posY].devolverDiferenca() + "\nPreco atual da semente: " + farmMapper[posX][posY].calcularPreco());
         }
-        
-        Semente[][] farmMapper = this.fazenda.getMatrizFazenda();
-        
-        System.out.println("Relatorio do plantio: \nNome da semente" + farmMapper[posX][posY].getNome() + "\nDescricao: " + farmMapper[posX][posY].getDescricao() + "\nDias até a colheita: " + farmMapper[posX][posY].devolverDiferenca() + "\nPreco atual da semente: " + farmMapper[posX][posY].calcularPreco());
     }
     
     public void dormir() {
-        this.diaAtual++;
-        this.fazenda.cultivar();
-        
-        System.out.println("Bom dia " + this.nome + " // Dia " + this.diaAtual + "!");
+        if(validatePlace("CASA")) {
+            this.diaAtual++;
+            this.fazenda.cultivar();
+
+            System.out.println("Bom dia " + this.nome + " // Dia " + this.diaAtual + "!");
+        }
     }
     
     public void venderItem(int slot) {
-        if(inventario[slot] == null) {
-            System.out.println("Slot vazio!");
-        } else {
-            Item item = inventario[slot];
-            
-            this.saldo += item.calcularPreco();
-            
-            inventario[slot] = null;
-            
-            System.out.println("Item " + item.getNome() + " foi Vendido por " + item.calcularPreco() + "$");
+        if(validatePlace("FAZENDA")) {
+            if(inventario[slot] == null) {
+                System.out.println("Slot vazio!");
+            } else {
+                Item item = inventario[slot];
+
+                this.saldo += item.calcularPreco();
+
+                inventario[slot] = null;
+
+                System.out.println("Item " + item.getNome() + " foi Vendido por " + item.calcularPreco() + "$");
+            }
         }
     }
     
     public void colher(int posX, int posY) {
-        if(posX >= 64 || posY >= 64) {
-            System.out.println("Posição invalida!");
-            return;
+        if(chunksLimiter(posX, posY) && validatePlace("FAZENDA")) {
+            Semente[][] farmMapper = this.fazenda.getMatrizFazenda();
+
+            if (farmMapper[posX][posY] == null) {
+                System.out.println("Nao tem nada plantado aqui!");
+                return;
+            }
+
+            if(farmMapper[posX][posY].devolverDiferenca() == 0) {
+                colocarNoInventario(farmMapper[posX][posY]);
+
+                System.out.println("Semente " + farmMapper[posX][posY].getNome() + " Foi colhida, seu preco de venda: " + farmMapper[posX][posY].calcularPreco() + "$");
+
+                farmMapper[posX][posY] = null;
+
+            } else {
+                System.out.println("A semente ainda nao pode ser colhida, deixe-a crescer mais! [tempo: " + farmMapper[posX][posY].getStatus() + "/" + farmMapper[posX][posY].getStatusColheita() + " dias]");
+            }
         }
-        
-        Semente[][] farmMapper = this.fazenda.getMatrizFazenda();
-        
-        if (farmMapper[posX][posY] == null) {
-            System.out.println("Nao tem nada plantado aqui!");
-            return;
+    }
+    
+    public void verItemsLoja() {
+        if(validatePlace("LOJA")) {  
+            Loja loja = getVila().getLoja();
+
+            loja.mostrarEstoque(getSaldo());
         }
-        
-        if(farmMapper[posX][posY].devolverDiferenca() == 0) {
-            int slot = findForEmptySlot();
+    }
+    
+    public void comprarItem(int slot) {
+        if(validatePlace("LOJA")) {
+            Loja loja = getVila().getLoja();
+            Item[] estoque = loja.getEstoque();
+
+            double saldoPersonagem = getSaldo();
+            double saldoLoja = loja.getSaldo();
+
+            if(estoque[slot] == null) {
+                System.out.println("Não há nada aqui...");
+                return;
+            } else if(getSaldo() < estoque[slot].calcularPreco()) {
+                System.out.println("Dinheiro insuficiente...");
+                return;
+            } else {
+                colocarNoInventario(estoque[slot]);
+
+                loja.setSaldo(saldoLoja + estoque[slot].calcularPreco());
+
+                setSaldo(saldoPersonagem - estoque[slot].calcularPreco());
+
+                estoque[slot] = null;
+
+                System.out.println("Comprado com Sucesso!!!");
+            }
+        }
+      
+    }
+    
+    public void consultarLugar() {
+        System.out.println(mapa);
+    }
+    
+    public void andar(String lugar) {
+        if(mapa.procurarLugar(lugar) != -1) {
+            mapa.setLugarAtual(lugar);
             
-            setInventario(farmMapper[posX][posY], slot);
-            
-            System.out.println("Semente " + farmMapper[posX][posY].getNome() + " Foi colhida, seu preco de venda: " + farmMapper[posX][posY].calcularPreco() + "$");
-            
-            farmMapper[posX][posY] = null;
+            System.out.println("Voce andou ate: " + mapa.getLugarAtual().toLowerCase());
             
         } else {
-            System.out.println("A semente ainda nao pode ser colhida, deixe-a crescer mais! [tempo: " + farmMapper[posX][posY].getStatus() + "/" + farmMapper[posX][posY].getStatusColheita() + " dias]");
-        }
+            System.out.println("Lugar inexistente!");
+        };
     }
     
     // Getters e Setters
@@ -226,11 +273,28 @@ public class Personagem {
         for(int i = 0; i < inventario.length; i++) {
             if(inventario[i] == null) {
                 slot = i;
-                
                 break;
             }
         }
         
         return slot;
+    }
+    
+    private boolean chunksLimiter(int posX, int posY) {
+        if(posX >= 64 || posY >= 64 || posX < 0 || posY < 0) {
+            System.out.println("Posição invalida");
+            return false;
+        }
+        
+        return true;
+    }
+    
+    private boolean validatePlace(String _PLACE) {
+        if(!mapa.getLugarAtual().equals(_PLACE)) {
+            System.out.println("Voce esta em " + mapa.getLugarAtual().toLowerCase() + " e portanto nao pode executar essa tarefa, consulte o mapa e saiba mais!");
+            return false;
+        }
+        
+        return true;
     }
 }
