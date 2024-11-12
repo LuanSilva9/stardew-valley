@@ -4,7 +4,10 @@
 
 package com.games.stardewvalley;
 
+import com.games.stardewvalley.classes.Adubo;
 import com.games.stardewvalley.classes.Fazenda;
+import com.games.stardewvalley.classes.Ingredientes;
+import com.games.stardewvalley.classes.Item;
 import com.games.stardewvalley.classes.Loja;
 import com.games.stardewvalley.classes.Npc;
 import com.games.stardewvalley.classes.Personagem;
@@ -20,37 +23,65 @@ public class StardewValley {
         return new Npc(nome, humor);
     }
     
-    public static void main(String[] args) {
-        Loja lojaDoPierre = new Loja("Loja do Pierre", null, gerarNpc("Pierre", "Cansado do trabalho"));
+    public static Loja gerarLoja(String nome, Item[] estoque, Npc npc) {
+        return new Loja(nome, estoque, npc);
+    }
+    
+    public static Item[] gerarEstoque() {
+        Item[] estoque = new Item[10];
+
+        estoque[0] = new Semente("Semente de Melao", 3, "semente", "Semente para crescer melao na estacao do verao.", 12);
+        estoque[1] = new Semente("Semente de Abobora", 4, "semente", "Semente para plantar aboboras no outono.", 13);
+        estoque[2] = new Semente("Semente de Flor de Girassol", 3, "semente", "Semente para plantar girassois no verao ou outono.", 8);
+        estoque[3] = new Semente("Semente de Couve-Flor", 3, "semente", "Semente para plantar couve-flor na primavera.", 12);
+
+
+        estoque[4] = new Ingredientes("Farinha de Trigo", 1, "ingrediente", "Ingrediente de culinaria feito a partir de trigo.");
+        estoque[5] = new Ingredientes("Acucar", 1, "Ingrediente", "ingrediente de culinaria feito de beterrabas.");
+        estoque[6] = new Ingredientes("Vinagre", 2, "Ingrediente", "ingrediente acido usado para cozinhar.");
+        estoque[7] = new Ingredientes("Farinha de Arroz", 2, "ingrediente", "Feita de arroz, usada em varias receitas.");
+        estoque[8] = new Ingredientes("Oleo", 2, "ingrediente", "Oleo para cozinhar, usado em diversas receitas.");
+
+        estoque[9] = new Adubo("Saco de Fertilizante de Qualidade", 4, "adubo", "Aumenta a chance de colheitas de qualidade superior.");
+
+        return estoque;
+    }
+
+    
+    public static Personagem createGame(String nome) {
+        Loja lojaDoPierre = gerarLoja("Loja do Pierre", gerarEstoque(), gerarNpc("Pierre", "Cansado porem feliz"));
+        
         Fazenda fazenda = new Fazenda("Fazenda JavaValley"); 
         Vila vilaPelicanos = new Vila("Vila pelicanos", gerarNpc("Lewis", "Feliz"), lojaDoPierre);
         
-        Personagem luan = new Personagem("Luan", "./skindefault.png", fazenda, vilaPelicanos);
+        Personagem personagem = new Personagem(nome, "./skindefault.png", fazenda, vilaPelicanos);
         
-        Semente chirivia = new Semente("Chirivia", 2, "semente", "Planta na primavera, leva cerca de 7 dias para crescer", 7);
+        return personagem;
+    }
+    
+    public static void main(String[] args) {
+        Personagem luan = createGame("Luan");
         
+//      luan.verItemsLoja();
+//      luan.comprarItem(1);
+//       
+//      luan.abrirInventario();
+//        
+//      luan.plantar(0, 0, 0);
+//        
+//      luan.abrirInventario();
+
+        luan.consultarLugar();
         
-        System.out.println(luan.getNome());
-        luan.abrirInventario(); // Inventario vazio!
+        luan.andar("vila");
         
-        luan.colocarNoInventario(chirivia);
-        luan.abrirInventario();
+         luan.pescar();
+//        
+        luan.andar("praia");
+//        
+        luan.pescar();
+
         
-        // Sistema de plantacao
-       
-        luan.plantar(0, 0, 0);
-        
-        for(int i = 0; i < 7; i++) {
-            luan.dormir();
-        }
-        
-        luan.colher(0, 0);
-        
-        System.out.println("Saldo antes de vender a chirivia - " + luan.getSaldo());
-        
-        luan.venderItem(0);
-        
-        System.out.println("Saldo depois de vender a chirivia - " + luan.getSaldo());
         
     }
 }
