@@ -16,7 +16,9 @@ public class Personagem {
     private Fazenda fazenda;
     private Vila vila;
     private Mapa mapa;
+    private Estacao estacao;
     private int diaAtual;
+    private int diaCorrido;
 
 
     public Personagem(String nome, String skin, Fazenda fazenda, Vila vila) {
@@ -25,6 +27,7 @@ public class Personagem {
         this.fazenda = fazenda;
         this.vila = vila;
         
+        this.estacao = Estacao.PRIMAVERA;
         this.saldo = 10.0;
         this.diaAtual = 0;
         this.inventario = new Item[128];
@@ -70,9 +73,7 @@ public class Personagem {
 
     public void pescar() {
         if(validatePlace("PRAIA")) {
-            Item peixePescado = new Peixe("Lucio", 10, "Peixe de agua doce", "Esse cara é bao!");
-
-            colocarNoInventario(peixePescado);
+            
         }
     }
     
@@ -85,7 +86,7 @@ public class Personagem {
             
             System.out.print("[ ");
             for(int i = 0; i < inventario.length; i++) {
-                if(inventario[i] != null ) System.out.print(inventario[i].getNome() + " - " + i);
+                if(inventario[i] != null) System.out.print(inventario[i].getNome() + " - " + i);
                 if(inventario[i + 1] != null) System.out.print(" | ");
                 if(inventario[i] == null) break;
             }
@@ -111,9 +112,12 @@ public class Personagem {
     public void dormir() {
         if(validatePlace("CASA")) {
             this.diaAtual++;
+            this.diaCorrido++;
             this.fazenda.cultivar();
+            
+            updateSeason();
 
-            System.out.println("Bom dia " + this.nome + " // Dia " + this.diaAtual + "!");
+            System.out.println("Bom dia!! // Dia " + this.diaAtual + " da " + this.estacao);
         }
     }
     
@@ -192,6 +196,12 @@ public class Personagem {
       
     }
     
+    public void minerar() {
+        if(validatePlace("CAVERNA")) {
+            
+        }
+    }
+    
     public void consultarLugar() {
         System.out.println(mapa);
     }
@@ -206,7 +216,7 @@ public class Personagem {
             System.out.println("Lugar inexistente!");
         };
     }
-    
+
     // Getters e Setters
     public String getNome() {
         return nome;
@@ -253,6 +263,10 @@ public class Personagem {
     public Vila getVila() {
         return vila;
     }
+    
+    public void setEstacao(Estacao estacao) {
+        this.estacao = estacao;
+    }
 
     public void setVila(Vila vila) {
         this.vila = vila;
@@ -264,6 +278,10 @@ public class Personagem {
 
     public void setDiaAtual(int diaAtual) {
         this.diaAtual = diaAtual;
+    }
+
+    public void setDiaCorrido(int diaCorrido) {
+        this.diaCorrido = diaCorrido;
     }
     
     // Metodos necessarios
@@ -296,5 +314,26 @@ public class Personagem {
         }
         
         return true;
+    }
+    
+    private void updateSeason() {
+        if(diaCorrido > 30 &&  diaCorrido <= 60) {
+            setEstacao(Estacao.VERAO);
+        }
+        
+        else if (diaCorrido >= 60 && diaCorrido <= 90) {
+            setEstacao(Estacao.OUTONO);
+        }
+        
+        else if (diaCorrido >= 90 && diaCorrido <= 120) {
+            setEstacao(Estacao.INVERNO);
+        }
+        
+        else if (diaCorrido > 120) {
+            setEstacao(Estacao.PRIMAVERA);
+            setDiaCorrido(0);
+        }
+        
+        if(diaCorrido == 0 || diaCorrido == 31 || diaCorrido == 61 || diaCorrido == 91 || diaCorrido == 121) setDiaAtual(1);
     }
 }
