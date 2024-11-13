@@ -9,7 +9,14 @@ package com.games.stardewvalley.classes;
  * @author Luan
  */
 public class Peixe extends Item {
-    public Peixe(String nome, int raridade, String tipo, String descricao) {
+    private Estacao estacao;
+    
+    public Peixe(String nome, int raridade, String tipo, String descricao, Estacao estacao) {
         super(nome, raridade, tipo, descricao);
+        this.estacao = estacao;
+    }
+
+    public Estacao getEstacao() {
+        return estacao;
     }
 }

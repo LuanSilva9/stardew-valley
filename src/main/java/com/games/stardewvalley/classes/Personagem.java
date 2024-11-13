@@ -4,10 +4,14 @@
  */
 package com.games.stardewvalley.classes;
 
+import com.games.stardewvalley.db.DB;
+
 /**
  *
  * @author Luan
  */
+
+
 public class Personagem {
     private String nome;
     private String skin;
@@ -19,6 +23,7 @@ public class Personagem {
     private Estacao estacao;
     private int diaAtual;
     private int diaCorrido;
+    private DB dbGame;
 
 
     public Personagem(String nome, String skin, Fazenda fazenda, Vila vila) {
@@ -32,6 +37,7 @@ public class Personagem {
         this.diaAtual = 0;
         this.inventario = new Item[128];
         this.mapa = new Mapa("FAZENDA");
+        this.dbGame = new DB();
     }
     
     // Metodos do Personagem
@@ -73,7 +79,9 @@ public class Personagem {
 
     public void pescar() {
         if(validatePlace("PRAIA")) {
+            Peixe peixeCapturado = dbGame.getFish().gerarPeixePorEstacao(estacao);
             
+            System.out.println("Peixe capturado: " + peixeCapturado.getNome());
         }
     }
     
