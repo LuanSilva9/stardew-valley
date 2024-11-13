@@ -50,13 +50,18 @@ public class Personagem {
                 return;
             }
 
-            if(inventario[slot].getTipo() == "semente") {
+            if(inventario[slot].getTipo().toLowerCase() == "semente") {
                 Semente semente = (Semente) inventario[slot];
 
-                farmMapper[posX][posY] = semente;
-                System.out.println("Semente " + semente.getNome() + " Plantada com successo!");
+                if(semente.getEstacao() == estacao) {
+                    farmMapper[posX][posY] = semente;
+                    System.out.println("Semente " + semente.getNome() + " Plantada com successo!");
 
-                inventario[slot] = null;
+                    inventario[slot] = null;
+                }
+                else {
+                    System.out.println("A semente " + semente.getNome() + " nao pode ser plantada na estacao atual! ");
+                }
             }
 
         }
@@ -82,6 +87,8 @@ public class Personagem {
             Peixe peixeCapturado = dbGame.getFish().gerarPeixePorEstacao(estacao);
             
             System.out.println("Peixe capturado: " + peixeCapturado.getNome());
+            
+            colocarNoInventario(peixeCapturado);
         }
     }
     

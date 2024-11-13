@@ -12,10 +12,12 @@ public class Semente extends Item {
     private int status;
     private int statusColheita;
     private boolean seco;
+    private Estacao estacao;
 
-    public Semente(String nome, int raridade, String tipo, String descricao, int statusColheita) {
+    public Semente(String nome, int raridade, String tipo, String descricao, int statusColheita, Estacao estacao, String nomeCol) {
         super(nome, raridade, tipo, descricao);
         this.statusColheita = statusColheita;
+        this.estacao = estacao;
         
         this.seco = true;
         this.status = 0;
@@ -57,6 +59,10 @@ public class Semente extends Item {
 
     public void setStatusColheita(int statusColheita) {
         this.statusColheita = statusColheita;
+    }
+    
+    public Estacao getEstacao() {
+        return estacao;
     }
     
 }
