@@ -14,7 +14,7 @@ import java.util.Random;
  * @author Luan
  */
 
-public class Fish {
+public class FishSeeder {
     public static Peixe[] peixes = {
         new Peixe("Anchova", 3, "Normal", "Peixe de oceano encontrado na primavera e outono", Estacao.PRIMAVERA),
         new Peixe("Anchova", 3, "Normal", "Peixe de oceano encontrado na primavera e outono", Estacao.OUTONO),

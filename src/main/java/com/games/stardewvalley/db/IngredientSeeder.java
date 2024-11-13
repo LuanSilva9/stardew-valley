@@ -8,10 +8,6 @@ package com.games.stardewvalley.db;
  *
  * @author Luan
  */
-public class DB {
-    private static FishSeeder fish = new FishSeeder();
+public class IngredientSeeder {
     
-    public FishSeeder getFish() {
-        return fish;
-    }
 }
