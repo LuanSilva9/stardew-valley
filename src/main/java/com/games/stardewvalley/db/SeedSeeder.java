@@ -6,6 +6,9 @@ package com.games.stardewvalley.db;
 
 import com.games.stardewvalley.classes.Estacao;
 import com.games.stardewvalley.classes.Semente;
+import static com.games.stardewvalley.db.FishSeeder.peixes;
+
+import java.util.Random;
 
 /**
  * 
@@ -40,4 +43,16 @@ public class SeedSeeder {
         new Semente("Semente de Figo-da-índia", 7, "Semente", "Semente de figo-da-índia, cultivada no inverno.", 14, Estacao.INVERNO, "Figo-da-índia"),
         new Semente("Semente de Pêssego", 9, "Semente", "Semente de pêssego, cultivada na primavera.", 18, Estacao.PRIMAVERA, "Pêssego")
     };
+
+    public Semente gerarSementePorEstacao(Estacao estacao) {
+        Random randNumber = new Random();
+
+        for (int i = 0; i < sementes.length; i++) {
+            int vec = randNumber.nextInt(sementes.length);
+            if (sementes[vec].getEstacao() == estacao) {
+                return sementes[vec];
+            }
+        }
+        return null;
+    }
 }
