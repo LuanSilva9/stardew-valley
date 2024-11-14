@@ -11,7 +11,6 @@ import com.games.stardewvalley.db.DB;
  * @author Luan
  */
 
-
 public class Personagem {
     private String nome;
     private String skin;
@@ -20,9 +19,7 @@ public class Personagem {
     private Fazenda fazenda;
     private Vila vila;
     private Mapa mapa;
-    private Estacao estacao;
-    private int diaAtual;
-    private int diaCorrido;
+
     private DB dbGame;
 
 
@@ -31,10 +28,7 @@ public class Personagem {
         this.skin = skin;
         this.fazenda = fazenda;
         this.vila = vila;
-        
-        this.estacao = Estacao.PRIMAVERA;
         this.saldo = 10.0;
-        this.diaAtual = 0;
         this.inventario = new Item[128];
         this.mapa = new Mapa("FAZENDA");
         this.dbGame = new DB();
@@ -50,10 +44,10 @@ public class Personagem {
                 return;
             }
 
-            if(inventario[slot].getTipo().toLowerCase() == "semente") {
+            if(inventario[slot].getTipo().toLowerCase().equals("semente")) {
                 Semente semente = (Semente) inventario[slot];
 
-                if(semente.getEstacao() == estacao) {
+                if(semente.getEstacao() == dbGame.getEstacao()) {
                     farmMapper[posX][posY] = semente;
                     System.out.println("Semente " + semente.getNome() + " Plantada com successo!");
 
@@ -75,7 +69,7 @@ public class Personagem {
             if(farmMapper[posX][posY].getSeco()) {
                 farmMapper[posX][posY].setSeco(false);
                 System.out.println("Semente " + farmMapper[posX][posY].getNome() + " Foi regada!");
-            };
+            }
 
             System.out.println("A semente " + farmMapper[posX][posY].getNome() + " Ja está regada e umida!");
         }
@@ -84,7 +78,7 @@ public class Personagem {
 
     public void pescar() {
         if(validatePlace("PRAIA")) {
-            Peixe peixeCapturado = dbGame.getFish().gerarPeixePorEstacao(estacao);
+            Peixe peixeCapturado = dbGame.getFish().gerarPeixePorEstacao(dbGame.getEstacao());
             
             System.out.println("Peixe capturado: " + peixeCapturado.getNome());
             
@@ -126,13 +120,15 @@ public class Personagem {
     
     public void dormir() {
         if(validatePlace("CASA")) {
-            this.diaAtual++;
-            this.diaCorrido++;
-            this.fazenda.cultivar();
+            dbGame.setDiaAtual(dbGame.getDiaAtual()+1);
+            dbGame.setDiaCorrido(dbGame.getDiaCorrido()+1);
+            
+            
+            fazenda.cultivar();
             
             updateSeason();
-
-            System.out.println("Bom dia!! // Dia " + this.diaAtual + " da " + this.estacao);
+            
+            System.out.println("Bom dia " + nome + " | Dia: " + dbGame.getDiaAtual() + " de " + dbGame.getEstacao());
         }
     }
     
@@ -192,10 +188,8 @@ public class Personagem {
 
             if(estoque[slot] == null) {
                 System.out.println("Não há nada aqui...");
-                return;
             } else if(getSaldo() < estoque[slot].calcularPreco()) {
                 System.out.println("Dinheiro insuficiente...");
-                return;
             } else {
                 colocarNoInventario(estoque[slot]);
 
@@ -244,6 +238,10 @@ public class Personagem {
     public String getSkin() {
         return skin;
     }
+    
+       public DB getDbGame() {
+        return dbGame;
+    }
 
     public Item[] getInventario() {
         return inventario;
@@ -278,25 +276,10 @@ public class Personagem {
     public Vila getVila() {
         return vila;
     }
-    
-    public void setEstacao(Estacao estacao) {
-        this.estacao = estacao;
-    }
+   
 
     public void setVila(Vila vila) {
         this.vila = vila;
-    }
-
-    public int getDiaAtual() {
-        return diaAtual;
-    }
-
-    public void setDiaAtual(int diaAtual) {
-        this.diaAtual = diaAtual;
-    }
-
-    public void setDiaCorrido(int diaCorrido) {
-        this.diaCorrido = diaCorrido;
     }
     
     // Metodos necessarios
@@ -332,23 +315,23 @@ public class Personagem {
     }
     
     private void updateSeason() {
-        if(diaCorrido > 30 &&  diaCorrido <= 60) {
-            setEstacao(Estacao.VERAO);
+        if(dbGame.getDiaCorrido() > 30 &&  dbGame.getDiaCorrido() <= 60) {
+            dbGame.setEstacao(Estacao.VERAO);
         }
         
-        else if (diaCorrido >= 60 && diaCorrido <= 90) {
-            setEstacao(Estacao.OUTONO);
+        else if (dbGame.getDiaCorrido() >= 60 && dbGame.getDiaCorrido() <= 90) {
+            dbGame.setEstacao(Estacao.OUTONO);
         }
         
-        else if (diaCorrido >= 90 && diaCorrido <= 120) {
-            setEstacao(Estacao.INVERNO);
+        else if (dbGame.getDiaCorrido() >= 90 && dbGame.getDiaCorrido() <= 120) {
+            dbGame.setEstacao(Estacao.INVERNO);
         }
         
-        else if (diaCorrido > 120) {
-            setEstacao(Estacao.PRIMAVERA);
-            setDiaCorrido(0);
+        else if (dbGame.getDiaCorrido() > 120) {
+            dbGame.setEstacao(Estacao.PRIMAVERA);
+            dbGame.setDiaCorrido(0);
         }
         
-        if(diaCorrido == 0 || diaCorrido == 31 || diaCorrido == 61 || diaCorrido == 91 || diaCorrido == 121) setDiaAtual(1);
+        if(dbGame.getDiaCorrido() == 0 || dbGame.getDiaCorrido() == 31 || dbGame.getDiaCorrido() == 61 || dbGame.getDiaCorrido() == 91 || dbGame.getDiaCorrido() == 121) dbGame.setDiaAtual(1);
     }
 }
